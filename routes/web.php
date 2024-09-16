@@ -33,21 +33,19 @@ Route::post('/user-update',[UserController::class,'UpdateProfile'])->middleware(
 Route::get('/logout', [UserController::class, 'UserLogout']);
 
 //user login Route
-// Route::get('/',[HomeController::class,'HomePage']);
 Route::get('/userLogin',[UserController::class,'LoginPage']);
 Route::get('/userRegistration',[UserController::class,'RegistrationPage']);
 Route::get('/sendOtp',[UserController::class,'SendOtpPage']);
 Route::get('/verifyOtp',[UserController::class,'VerifyOTPPage']);
 Route::get('/resetPassword',[UserController::class,'ResetPasswordPage'])->middleware([TokenVerificationMiddleware::class]);
-Route::get('/dashboard',[DashboardController::class,'DashboardPage'])->middleware([TokenVerificationMiddleware::class]);
-Route::get('/userProfile',[UserController::class,'ProfilePage'])->middleware([TokenVerificationMiddleware::class]);
 
-//Admin API
-Route::post('/wp-admin/admin-login', [AdminController::class, 'userLogin']);
-Route::get('/wp-admin/user-profile',[AdminController::class,'UserProfile'])->middleware([TokenVerificationMiddleware::class]);
-Route::post('/wp-admin/user-update',[AdminController::class,'UpdateProfile'])->middleware([TokenVerificationMiddleware::class]);
+//user dashboard route
+Route::middleware(['user'])->group(function (){
+    Route::get('/dashboard',[DashboardController::class,'DashboardPage'])->name('user.dashboard')->middleware([TokenVerificationMiddleware::class]);
+    Route::get('/userProfile',[UserController::class,'ProfilePage'])->middleware([TokenVerificationMiddleware::class]);
+});
 
-//admin Route
-Route::get('/wp-admin', [AdminController::class, 'LoginPage']);
-Route::get('/wp-admin/userProfile', [AdminController::class, 'ProfilePage'])->middleware([TokenVerificationMiddleware::class]);
-Route::get('/wp-admin/dashboard', [AdminDashboardController::class, 'DashboardPage'])->middleware([TokenVerificationMiddleware::class]);
+//admin dashboard
+Route::middleware(['admin'])->group(function () {
+    Route::get('/admin-dashboard',[DashboardController::class,'AdminDashboardPage'])->name('admin.dashboard')->middleware([TokenVerificationMiddleware::class]);
+});

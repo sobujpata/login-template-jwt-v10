@@ -13,41 +13,42 @@ use Illuminate\View\View;
 class UserController extends Controller
 {
     function LoginPage():View{
-        return view('users-pages.auth.login-page');
+        return view('pages.auth.login-page');
     }
 
     function RegistrationPage():View{
-        return view('users-pages.auth.registration-page');
+        return view('pages.auth.registration-page');
     }
     function SendOtpPage():View{
-        return view('users-pages.auth.send-otp-page');
+        return view('pages.auth.send-otp-page');
     }
     function VerifyOTPPage():View{
-        return view('users-pages.auth.verify-otp-page');
+        return view('pages.auth.verify-otp-page');
     }
 
     function ResetPasswordPage():View{
-        return view('users-pages.auth.reset-pass-page');
+        return view('pages.auth.reset-pass-page');
     }
 
     function ProfilePage():View{
-        return view('users-pages.dashboard.profile-page');
+        return view('pages.dashboard.profile-page');
     }
     public function userLogin(Request $request)
     {
         $count = User::where('email', '=', $request->input('email'))
-                ->where('password', '=', $request->input('password'))
-                ->select('id')
-                ->first();
+        ->where('password', '=', $request->input('password'))
+        ->select('id', 'role')
+        ->first();
 
-                if($count !== null){
-                    //user login -> JWT token issue
-                    $token = JWTToken::CreateToken($request->input('email'), $count->id);
-                    return response()->json([
-                        'status'=>'success',
-                        'message'=>'Login successfully',
-                        // 'token'=>$token
-                    ], 200)->cookie('token',$token,time()+60*24*30);
+        if($count !== null){
+            //user login -> JWT token issue
+            $token = JWTToken::CreateToken($request->input('email'), $count->id, $count->role);
+            return response()->json([
+                'status'=>'success',
+                'message'=>'Login successfully',
+                // 'token'=>$token
+                'data'=>$count->role
+            ], 200)->cookie('token',$token,time()+60*24*30);
                 }else{
                     return response()->json([
                         'status'=>'failed',

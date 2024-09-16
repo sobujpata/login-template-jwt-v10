@@ -6,7 +6,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 class JWTToken {
-    public static function CreateToken($userEmail, $userID):string
+    public static function CreateToken($userEmail, $userID, $userRole):string
     {
         $key = env('JWT_KEY');
         $payload = [
@@ -14,7 +14,8 @@ class JWTToken {
             'iat'=>time(),
             'exp'=>time()+36*36,
             'userEmail'=>$userEmail,
-            'userID'=>$userID
+            'userID'=>$userID,
+            'userRole'=>$userRole
         ];
         return JWT::encode($payload, $key, 'HS256');
     }
