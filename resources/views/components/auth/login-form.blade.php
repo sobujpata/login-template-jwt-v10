@@ -39,10 +39,16 @@
             }
             else{
                 showLoader();
-                let res=await axios.post("/wp-admin/admin-login",{email:email, password:password});
+                let res=await axios.post("/user-login",{email:email, password:password});
                 hideLoader()
                 if(res.status===200 && res.data['status']==='success'){
-                    window.location.href="/wp-admin/dashboard";
+                    if(res.data['data']==='admin'){
+                        window.location.href="/admin-dashboard";
+                    }else if(res.data['data']==='user'){
+                        window.location.href="/dashboard";
+                    }else{
+                        errorToast("Invalid User");
+                    }
                 }
                 else{
                     errorToast(res.data['message']);
